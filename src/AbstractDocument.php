@@ -52,6 +52,7 @@ abstract class AbstractDocument
     public function __construct( $file = null )
     {
         $this->dom = new \DOMDocument('1.0', 'UTF-8');
+        $this->dom->preserveWhiteSpace = false;
         $this->dom->formatOutput = true;
 
         if (null === $file) {
@@ -181,11 +182,10 @@ abstract class AbstractDocument
      */
     public function normalize()
     {
-        // TODO: recursive
-        for ($i = 0; $i < 4; $i++) {
-            foreach( $this->query('//*[not(node())]') as $node ) {
-                $node->parentNode->removeChild($node);
-            }
+        $xpath = new \DOMXpath($this->dom);
+       
+        foreach( $xpath->query('//*[not(node())]') as $node ) {
+            $node->parentNode->removeChild($node);
         }
 
         return $this;
